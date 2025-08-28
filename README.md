@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GST Calculator with Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #FFDEE9, #B5FFFC);
+      text-align: center;
+      padding: 40px;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      width: 350px;
+      margin: auto;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+    input, select, button {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background: #2196F3;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0b7dda;
+    }
+    .result {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #222;
+    }
+    canvas {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>GST Calculator</h2>
+    <input type="number" id="amount" placeholder="Enter Amount">
+    <select id="slab">
+      <option value="0.05">5%</option>
+      <option value="0.12">12%</option>
+      <option value="0.18">18%</option>
+      <option value="0.28">28%</option>
+    </select>
+    <button onclick="calculateGST()">Calculate</button>
+    <div class="result" id="output"></div>
+    <canvas id="gstChart" width="300" height="300"></canvas>
+  </div>
+
+  <script>
+    let chart; // to store chart instance
+
+    function calculateGST() {
+      let amount = document.getElementById("amount").value;
+      let slab = document.getElementById("slab").value;
+
+      if (amount === "" || amount <= 0) {
+        document.getElementById("output").innerHTML = "Please enter a valid amount.";
+        return;
+      }
+
+      let gst = amount * slab;
+      let total = parseFloat(amount) + gst;
+
+      document.getElementById("output").innerHTML =
+        "GST: ₹" + gst.toFixed(2) + "<br>Total Amount: ₹" + total.toFixed(2);
+
+      // Pie chart data
+      let data = {
+        labels: ["Base Amount", "GST"],
+        datasets: [{
+          data: [amount, gst],
+          backgroundColor: ["#4CAF50", "#FF5733"]
+        }]
+      };
+
+      // Destroy old chart before creating new
+      if (chart) {
+        chart.destroy();
+      }
+
+      let ctx = document.getElementById("gstChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "pie",
+        data: data,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+            },
+            title: {
+              display: true,
+              text: "GST Breakdown"
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
